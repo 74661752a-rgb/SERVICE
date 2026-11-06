@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FRONT·CS·컨시어지 대시보드</title>
+<style>
+:root{--bg:#eef1f5;--panel:#fff;--fg:#0b1220;--mut:#3d4756;--line:#cfd6e0;--acc:#1f5fbf;--accbg:#dce8fb;--bad:#b3261e;--ok:#146c3a;--grid:#e7ebf1}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1319;--panel:#1a2029;--fg:#f5f7fa;--mut:#c3cbd7;--line:#3a4352;--acc:#8bb7ff;--accbg:#1d2a40;--bad:#ff9d8f;--ok:#6fe09c;--grid:#2a323e}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,BlinkMacSystemFont,sans-serif;font-size:14px;line-height:1.6;font-weight:500;letter-spacing:-.01em;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;word-break:keep-all;overflow-wrap:break-word}
+.app{max-width:430px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+@media (min-width:480px){body{padding:24px 0}.app{min-height:calc(100vh - 48px);border-radius:28px;box-shadow:0 10px 40px rgba(0,0,0,.18);overflow:hidden;background:var(--bg)}}
+header{padding:calc(20px + env(safe-area-inset-top,0px)) 16px 12px}
+h1{font-size:20px;font-weight:800;margin:0 0 4px;line-height:1.3}
+.sub{color:var(--mut);font-size:12.5px;margin:0}
+.sum{margin:12px 16px 0;padding:12px 14px;background:var(--accbg);border-radius:12px;font-size:13.5px;color:var(--fg)}
+main{padding:12px 16px;display:flex;flex-direction:column;gap:12px}
+.tab{display:none;flex-direction:column;gap:12px}.tab.on{display:flex}
+h2{font-size:16.5px;font-weight:800;margin:4px 0 0}
+h3{font-size:14.5px;font-weight:700;margin:0 0 4px}
+.card{background:var(--panel);border:1.5px solid var(--line);border-radius:14px;padding:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile .lab{font-size:12px;font-weight:600;color:var(--mut)}
+.tile .big{font-size:23px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2;margin-top:2px}
+.tile .note{font-size:12px;font-weight:600;color:var(--mut)}
+.bad{color:var(--bad)}.ok{color:var(--ok)}
+.muted{color:var(--mut);font-size:12.5px;font-weight:500}
+.bar{margin:12px 0}
+.bar .top{display:flex;justify-content:space-between;font-size:13.5px;font-weight:600;gap:8px}
+.bar .top b{font-variant-numeric:tabular-nums}
+.track{position:relative;height:12px;background:var(--grid);border-radius:6px;margin-top:6px}
+.fill{height:100%;background:var(--acc);border-radius:6px}
+.tgt{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--fg)}
+.tgtl{font-size:11.5px;color:var(--mut);text-align:right}
+.pill{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 8px;border:1px solid var(--line);border-radius:999px;color:var(--mut);letter-spacing:.03em}
+.item{border-top:1px solid var(--line);padding:10px 0}
+.item:first-of-type{border-top:0;padding-top:2px}
+.item .id{font-size:11.5px;font-weight:600;color:var(--mut);font-variant-numeric:tabular-nums}
+.item .t{font-weight:700;font-size:14.5px}
+.item .d{font-size:13.5px}
+.item .i{font-size:12.5px;color:var(--mut);margin-top:2px}
+.q{border-left:4px solid var(--line);padding:8px 12px;margin-top:8px;font-size:13.5px;line-height:1.65}
+.q.no{border-color:var(--bad)}.q.ok{border-color:var(--ok)}
+.q .ql{font-size:12px;font-weight:800}.q.no .ql{color:var(--bad)}.q.ok .ql{color:var(--ok)}
+.sec{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--panel);color:var(--fg);padding:7px 13px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.chip.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.chip:focus-visible,nav button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:430px;display:flex;background:var(--panel);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+@media (min-width:480px){nav{bottom:24px;border-radius:0 0 28px 28px}}
+nav button{flex:1;border:0;background:none;color:var(--mut);padding:10px 2px;font-size:11.5px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{color:var(--acc);font-weight:700}
+dl{margin:0}dt{font-weight:800;margin-top:10px}dd{margin:0;color:var(--mut);font-size:13px}
+.sch{border:1.5px solid var(--c);background:var(--cb);border-left:6px solid var(--c);border-radius:12px;padding:10px 12px;margin-top:10px}
+.sch .pill{background:var(--c);border-color:var(--c);color:#fff;font-weight:700}
+.sch.y .pill{color:#1a1300}
+.sch.r{--c:#d92d20;--cb:#fdecea}.sch.b{--c:#1f5fbf;--cb:#e3edfc}.sch.p{--c:#d6336c;--cb:#fde7f0}.sch.y{--c:#e0a800;--cb:#fff6d6}
+@media (prefers-color-scheme:dark){.sch.r{--c:#ef6a5e;--cb:#3a1b19}.sch.b{--c:#6ea4f4;--cb:#182a45}.sch.p{--c:#f06fa0;--cb:#3b1a28}.sch.y{--c:#f2c94c;--cb:#3a3112}}
+.sch .d{margin-top:4px;font-size:13.5px}
+.sch .t{font-weight:700;font-size:14.5px}
+.sch .id{font-size:11.5px;font-weight:700;color:var(--c)}
+.sch .i{font-size:12.5px;color:var(--mut);margin-top:2px}
+.p3{display:flex;flex-direction:column;gap:8px}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<h1>FRONT & CS · 컨시어지</h1>
+<p class="sub">2026 미스터리쇼핑 2차 평가 · 기준일 2026.10.16</p>
+</header>
+<div class="sum"><b>한 줄 요약</b><br>FRONT는 출발 단계(계산서 확인·영수증·미해결 문제 확인)와 고객명 호칭이 가장 약합니다. 컨시어지는 선호 질문과 요청 완료 후 확인이 핵심입니다.</div>
+<main>
+<section class="tab on" id="t-home">
+<h2>한눈에 보기</h2>
+<div class="grid" id="tiles"></div>
+<p class="muted">부서 점수는 원본 보고서의 부서별 결과 카드 값입니다. 부서마다 평가 문항이 같다고 볼 수 없어, 순위 비교보다 개선 출발점으로 보세요.</p>
+<div class="card"><h3>FRONT & CS 충족률</h3><p class="muted">충족률 = 평가 항목 중 기준을 지킨 비율. 검은 세로선은 목표.</p><div id="bars"></div></div>
+<h2>공통 원칙 3가지</h2>
+<div class="p3">
+<div class="card"><h3>KNOW ME</h3><b>고객을 알아보고 먼저 제안한다</b><div class="muted">고객명 호칭, 선호·방문 목적 파악, 고객정보의 현장 활용</div></div>
+<div class="card"><h3>KEEP THE PROMISE</h3><b>약속한 서비스를 매번 지킨다</b><div class="muted">시간·담당·절차 명확화, 안내한 서비스의 실제 이행</div></div>
+<div class="card"><h3>MAKE IT RIGHT</h3><b>문제는 끝까지 바로잡는다</b><div class="muted">문제 인지, 상황 안내, 담당자 지정, 해결·대안, 사과, 출발 전 후속 확인</div></div>
+</div>
+</section>
+
+<section class="tab" id="t-front"><h2>FRONT & CS</h2><p class="muted">기본 복장·인사·전화 응대는 양호하지만, 고객을 알아보고 먼저 챙기는 맞춤 응대가 약합니다.</p><div id="front"></div></section>
+<section class="tab" id="t-con"><h2>컨시어지</h2><p class="muted">기본 태도는 양호하지만, 고객명 호칭·선호 파악·먼저 제안하기가 약합니다.</p><div id="con"></div></section>
+<section class="tab" id="t-script"><h2>현장 응대 스크립트</h2><div class="sec" id="sfilter"></div><div id="scripts"></div></section>
+<section class="tab" id="t-plan"><h2>연계 과제·일정</h2><div class="card"><h3>함께 풀어야 할 과제</h3><div id="cross"></div></div><div class="card"><h3>우선 추진 일정</h3><div id="sched"></div></div>
+<p class="muted">과제 완료는 교육을 마쳤는지가 아니라, 고객이 실제로 같은 수준의 서비스를 경험하는지로 판단합니다.</p>
+<div class="card"><h3>용어 풀이</h3><dl>
+<dt>미스터리쇼핑</dt><dd>평가자가 일반 손님처럼 이용하며 서비스를 점검하는 평가</dd>
+<dt>패널·팀</dt><dd>평가를 한 평가자 그룹. "0/4팀"은 4팀 중 한 팀도 하지 않았다는 뜻</dd>
+<dt>서비스 회복</dt><dd>문제가 생긴 뒤 사과하고 바로잡아 신뢰를 되찾는 일</dd>
+<dt>미스터리콜</dt><dd>고객인 척 전화해 응대를 점검하는 방식 (여기선 부서 자체 점검)</dd>
+<dt>SOP</dt><dd>표준 업무 절차서</dd></dl>
+<p class="muted" style="margin-top:10px">객실운영·호텔 전체·식음·레저·카지노 내용은 제외했습니다. 출처: 2026 미스터리쇼핑 종합 결과 보고서(2차), Paradise Hotel Busan Brand Audit Team.</p></div>
+</section>
+</main>
+</div>
+<nav aria-label="메뉴" id="nav"></nav>
+<script>
+const D={"kpis": [{"id": "front_score", "dept": "FRONT", "label": "FRONT & CS 부서 점수", "value": 72.9, "target": null, "delta": null, "unit": "score"}, {"id": "concierge_score", "dept": "CONCIERGE", "label": "컨시어지 부서 점수", "value": 79.3, "target": null, "delta": null, "unit": "score"}, {"id": "arrival", "dept": "FRONT", "label": "도착서비스 충족률", "value": 75.0, "target": 85, "delta": null, "unit": "pct"}, {"id": "departure", "dept": "FRONT", "label": "출발서비스 충족률", "value": 69.5, "target": 85, "delta": -9.8, "unit": "pct"}, {"id": "english_departure", "dept": "FRONT", "label": "영어권 패널 출발서비스", "value": 50.0, "target": null, "delta": null, "unit": "pct"}, {"id": "name_call", "dept": "FRONT", "label": "고객명 호칭", "value": 44.7, "target": null, "delta": null, "unit": "pct"}, {"id": "bill_check", "dept": "FRONT", "label": "정산 전 계산서 확인(팀)", "value": 0, "target": 4, "delta": null, "unit": "teams"}], "issues": [{"id": "F-1", "dept": "FRONT", "area": "도착 응대", "finding": "도착서비스 충족률이 낮음. 고객을 먼저 알아보고 맞춤형으로 응대하는 수준 보완 필요", "impact": "첫 접점에서 환대와 신뢰 형성 약화"}, {"id": "F-2", "dept": "FRONT", "area": "개인화", "finding": "고객명 호칭이 낮은 수준. 선호 질문·맞춤 체감은 4개 팀 모두 미흡", "impact": "고객이 자신을 알아보고 배려한다는 느낌 부족"}, {"id": "F-3", "dept": "FRONT", "area": "체크아웃·정산", "finding": "정산 전 계산서 확인이 0/4팀으로 기록됨", "impact": "오류·누락을 출발 전에 발견할 기회 상실"}, {"id": "F-4", "dept": "FRONT", "area": "영수증", "finding": "셀프 체크아웃에서 영수증이 출력되지 않아 데스크에서 수동 체크아웃을 다시 진행한 사례", "impact": "마지막 경험의 불편 및 신뢰 저하"}, {"id": "F-5", "dept": "FRONT", "area": "서비스 회복", "finding": "미해결 이슈 확인 없이 체크아웃이 진행된 사례", "impact": "문제 발생 후 책임 있는 마무리 부족"}, {"id": "C-1", "dept": "CONCIERGE", "area": "선호 파악", "finding": "고객 선호 질문이 2차 평가의 신규 공통 미흡 항목", "impact": "고객의 취향·목적에 맞는 제안 기회 상실"}, {"id": "C-2", "dept": "CONCIERGE", "area": "요청 경청", "finding": "요청을 충분히 확인하고 필요한 후속 질문을 하는 행동의 표준화 필요", "impact": "요청 내용 누락·오해, 부적합한 안내 가능성"}, {"id": "C-3", "dept": "CONCIERGE", "area": "요청 완료 확인", "finding": "요청 처리 후 고객에게 완료 여부를 확인하는 절차 강화 필요", "impact": "요청이 실제 해결되었는지 고객이 확신하기 어려움"}, {"id": "C-4", "dept": "CONCIERGE", "area": "개인화", "finding": "고객명 호칭 및 먼저 알아보고 챙기는 응대가 공통 취약점", "impact": "일반적인 안내에 머물러 특별한 환대 체감 저하"}], "actions": [{"id": "F-A1", "dept": "FRONT", "task": "고객명 호칭과 선제 응대를 FRONT 공통 응대 기준으로 지정하고, 체크인·체크아웃 중 자연스럽게 고객을 확인해 호칭한다."}, {"id": "F-A2", "dept": "FRONT", "task": "체크아웃 시 정산 전 계산서 내용을 고객과 함께 확인하고, 셀프 체크아웃 영수증 출력 여부까지 확인한다."}, {"id": "F-A3", "dept": "FRONT", "task": "출발 전 고객 불편·미해결 요청을 재확인하고, 미해결 건은 담당자를 지정해 해결 또는 대안을 안내한다."}, {"id": "F-A4", "dept": "FRONT", "task": "보안·요금 등 신뢰와 직결되는 사고는 지배인 보고, 대면 사과, 해결 조치, 출발 전 재확인의 회복 절차로 관리한다."}, {"id": "C-A1", "dept": "CONCIERGE", "task": "고객 요청을 접수할 때 선호 질문을 의무화한다. 목적·취향·동행자·시간 등 필요한 후속 질문을 한다."}, {"id": "C-A2", "dept": "CONCIERGE", "task": "요청을 끝까지 경청한 뒤 핵심 내용을 되짚어 확인하고, 고객이 원하는 결과와 시간 조건을 명확히 한다."}, {"id": "C-A3", "dept": "CONCIERGE", "task": "요청의 담당자와 완료 예정 시간을 안내하고, 타 부서로 넘긴 경우에도 결과를 확인할 책임자를 지정한다."}, {"id": "C-A4", "dept": "CONCIERGE", "task": "요청 완료 후 고객에게 결과를 확인하는 연락 또는 대면 확인을 시행한다."}, {"id": "C-A5", "dept": "CONCIERGE", "task": "고객명 호칭과 선제 제안을 공통 응대 기준으로 반영하고, 현장 코칭과 자체 미스터리콜로 반복 이행을 점검한다."}], "metrics": [{"id": "F-M1", "dept": "FRONT", "metric": "도착서비스", "goal": "85% 목표", "method": "도착 인지·인사·고객 확인 현장 관찰"}, {"id": "F-M2", "dept": "FRONT", "metric": "출발서비스", "goal": "85% 목표", "method": "계산서 확인, 영수증 출력, 미해결 이슈 확인 체크"}, {"id": "F-M3", "dept": "FRONT", "metric": "고객명 호칭", "goal": "개선 우선과제", "method": "체크인·체크아웃 샘플 모니터링 및 코칭"}, {"id": "F-M4", "dept": "FRONT", "metric": "계산서 확인", "goal": "전 고객 실행 기준", "method": "정산 전 확인 절차 체크리스트"}, {"id": "C-M1", "dept": "CONCIERGE", "metric": "게스트서비스", "goal": "85% 목표", "method": "요청 접수·처리·완료 확인 단계별 표본 점검"}, {"id": "C-M2", "dept": "CONCIERGE", "metric": "선호 질문", "goal": "4/4팀 실행", "method": "컨시어지 응대 샘플 및 자체 미스터리콜"}, {"id": "C-M3", "dept": "CONCIERGE", "metric": "요청 완료 확인", "goal": "모든 요청에 후속 확인", "method": "요청 로그에 담당자·완료 시각·고객 확인 기록"}], "cross": [{"id": "X-1", "topic": "고객정보의 현장 활용", "owners": "FRONT · 컨시어지 · 객실운영", "content": "예약·체크인 단계에서 파악한 고객 정보와 선호를 현장 서비스에 연결하고, 실제 활용 여부를 확인한다."}, {"id": "X-2", "topic": "객실 보안 및 사고 회복", "owners": "객실운영 · FRONT · 시설관리 · 지배인", "content": "사고 발생 시 담당자 지정, 대면 사과, 해결, 출발 전 재확인을 일원화한다."}, {"id": "X-3", "topic": "요청 처리의 종결성", "owners": "컨시어지 · FRONT · 객실운영 및 관련 부서", "content": "요청을 전달하는 데서 끝내지 않고 처리 결과와 고객 만족 여부까지 확인한다."}], "schedule": [{"id": "S-1", "when": "즉시", "action": "고객명 호칭·선제 응대 기준 공유, 체크아웃 계산서·영수증 확인, 요청 완료 확인 시행", "output": "부서별 체크리스트 및 현장 코칭 기록"}, {"id": "S-2", "when": "11월 내", "action": "서비스 회복 절차 정비", "output": "승인된 운영 기준·SOP"}, {"id": "S-3", "when": "12월", "action": "기준 교육 및 현장 적용 확인, 자체 미스터리콜·현장 관찰 실시", "output": "교육 이수·관찰 결과·개선 액션로그"}, {"id": "S-4", "when": "지속 관리", "action": "월간 액션로그 신호등 관리, 지연 과제 원인·조치 리뷰, 반복 이행 여부 검증", "output": "월간 리뷰 및 종료 판정 기록"}], "scripts": [{"id": "SC-1", "dept": "FRONT", "step": "돌발 상황: 키오스크 오류(영수증 미출력 등)", "principle": "MAKE IT RIGHT", "action": "고객이 당황하거나 처음부터 다시 하게 만들지 않는다. 오류를 안 즉시 직원이 수동 정산기로 모신다.", "bad": "키오스크가 오류 난 것 같네요. 저쪽 프런트 데스크 줄 서서 체크아웃 다시 진행해 주시겠어요?", "good": "고객님, 이용에 불편을 드려 대단히 죄송합니다. 키오스크 정산 장비에 일시적인 영수증 출력 오류가 발생한 것으로 확인됩니다. 고객님께서 과정을 다시 진행하실 필요 없도록, 제가 이쪽 데스크에서 즉시 정산 내역 확인과 퇴실 처리를 마무리해 드리겠습니다. 이쪽으로 모시겠습니다."}, {"id": "SC-2", "dept": "FRONT", "step": "체크아웃: 계산서와 다음 일정을 먼저 챙기기", "principle": "MAKE IT RIGHT", "action": "정산 전에 계산서 내역을 먼저 보여주고, 교통편과 불편 사항을 먼저 확인한다.", "bad": "", "good": "[홍길동] 고객님, 정산 진행해 드리기 전에 계산서 내역 먼저 확인 도와드리겠습니다. (화면 제시) 이용하시는 동안 혹시 불편하시거나 피드백 주실 부분은 없으셨습니까? 아울러 대중교통이나 차량 이용 등 이후 이동하시는 교통편에 도움이 필요하십니까? 저희 컨시어지 데스크에서 바로 안내 도와드릴 수 있습니다."}, {"id": "SC-3", "dept": "CONCIERGE", "step": "게스트 안내: 선호 질문 1개 의무화", "principle": "KNOW ME", "action": "일방적인 정보 제공을 멈추고, 목적과 선호를 묻는 질문을 반드시 던진다.", "bad": "", "good": "본관 3층에 위치한 저희 중식당 '남풍'을 안내해 드리겠습니다, 고객님. 최고의 경험을 하실 수 있도록 한 가지만 여쭈어보아도 되겠습니까? 오늘 어떤 소중한 분과 함께하시는 식사 자리이신지, 혹은 선호하시는 특정 메뉴나 요리 스타일이 있으신지 말씀해 주시면 가장 어울리는 좌석과 셰프 추천 메뉴를 함께 매칭해 드리겠습니다."}, {"id": "SC-4", "dept": "CONCIERGE", "step": "서비스 완료·팔로우업: 끝까지 책임지는 오너십", "principle": "MAKE IT RIGHT", "action": "로비나 대기 공간에서 짐을 든 고객에게 먼저 다가가 교통편이나 추가 도움을 제안한다.", "bad": "", "good": "(짐을 들고 계신 고객에게 먼저 다가가며) 고객님, 파라다이스 호텔 부산에서의 투숙은 편안하셨습니까? 체크아웃 이후 일정에 필요한 택시 배차나 짐 보관, 혹은 주변 교통 안내 등 제가 마지막까지 도와드릴 부분이 있을지 확인해 드리고자 왔습니다. 편하게 말씀해 주십시오."}]};
+const $=s=>document.querySelector(s);
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const K=Object.fromEntries(D.kpis.map(r=>[r.id,r]));
+const pct=v=>v.toFixed(1)+'%';
+// tiles
+[["FRONT & CS 부서 점수",pct(K.front_score.value),""],["컨시어지 부서 점수",pct(K.concierge_score.value),""],
+["도착서비스 충족률",pct(K.arrival.value),"목표 "+K.arrival.target+"%"],
+["출발서비스 충족률",pct(K.departure.value),"1차 대비 −"+Math.abs(K.departure.delta).toFixed(1)+"%p",1],
+["고객명 호칭",pct(K.name_call.value),""],
+["계산서 확인한 팀",K.bill_check.value+" / "+K.bill_check.target,"정산 전 확인",1]].forEach(([l,v,n,bad])=>{
+ const c=el("div","card tile");c.append(el("div","lab",l),el("div","big"+(bad?" bad":""),v),el("div","note",n));$("#tiles").append(c)});
+// bars
+D.kpis.filter(r=>r.unit==="pct").forEach(r=>{
+ const b=el("div","bar"),top=el("div","top");top.append(el("span",null,r.label),el("b",null,pct(r.value)));
+ const tr=el("div","track"),f=el("div","fill");f.style.width=r.value+"%";tr.append(f);
+ if(r.target!=null){const t=el("div","tgt");t.style.left=r.target+"%";tr.append(t)}
+ b.append(top,tr);if(r.target!=null){b.append(el("div","tgtl","목표 "+r.target+"%"))}
+ $("#bars").append(b)});
+// dept sections
+function dept(id,d){const root=$(id);
+ const c1=el("div","card");c1.append(el("h3",null,"주요 미흡 사례"));
+ D.issues.filter(r=>r.dept===d).forEach(r=>{const i=el("div","sch b");i.append(el("div","id",r.id),el("div","t",r.area),el("div","d",r.finding),el("div","i","고객 영향: "+r.impact));c1.append(i)});
+ const c2=el("div","card");c2.append(el("h3",null,"개선 실행과제"));
+ D.actions.filter(r=>r.dept===d).forEach(r=>{const i=el("div","sch b");i.append(el("div","id",r.id),el("div","d",r.task));c2.append(i)});
+ const c3=el("div","card");c3.append(el("h3",null,"관리지표"));
+ D.metrics.filter(r=>r.dept===d).forEach(r=>{const i=el("div","sch b");i.append(el("div","t",r.metric+" · "+r.goal),el("div","i","확인: "+r.method));c3.append(i)});
+ root.style.cssText="display:flex;flex-direction:column;gap:12px";root.append(c1,c2,c3)}
+dept("#front","FRONT");dept("#con","CONCIERGE");
+// scripts
+let sf="FRONT";
+function drawScripts(){const root=$("#scripts");root.replaceChildren();root.style.cssText="display:flex;flex-direction:column;gap:12px";
+ D.scripts.filter(r=>r.dept===sf).forEach(r=>{const c=el("div","card");
+  c.append(el("span","pill",r.principle),el("h3",null,r.step),el("div","muted","핵심 행동: "+r.action));
+  if(r.bad){const q=el("div","q no");q.append(el("div","ql","잘못된 응대"),el("div",null,"\""+r.bad+"\""));c.append(q)}
+  const q=el("div","q ok");q.append(el("div","ql","가이드 스크립트"),el("div",null,"\""+r.good+"\""));c.append(q);root.append(c)})}
+[["FRONT","FRONT & CS"],["CONCIERGE","컨시어지"]].forEach(([k,l])=>{const b=el("button","chip"+(k===sf?" on":""),l);b.onclick=()=>{sf=k;document.querySelectorAll("#sfilter .chip").forEach(x=>x.classList.toggle("on",x===b));drawScripts()};$("#sfilter").append(b)});
+drawScripts();
+// plan
+D.cross.forEach(r=>{const i=el("div","sch b");i.append(el("div","t",r.topic),el("div","i","주관·협업: "+r.owners),el("div","d",r.content));$("#cross").append(i)});
+const SC={"즉시":"r","11월 내":"b","12월":"p","지속 관리":"y"};
+D.schedule.forEach(r=>{const i=el("div","sch "+(SC[r.when]||""));i.append(el("span","pill",r.when),el("div","d",r.action),el("div","i","산출물: "+r.output));$("#sched").append(i)});
+// nav
+const icons={home:'<path d="M3 11l9-8 9 8M5 10v10h14V10"/>',front:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',con:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',script:'<path d="M4 5h16v11H9l-5 4z"/>',plan:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'};
+[["home","t-home","개요"],["front","t-front","FRONT"],["con","t-con","컨시어지"],["script","t-script","스크립트"],["plan","t-plan","일정"]].forEach(([ic,id,l])=>{
+ const b=el("button",id==="t-home"?"on":"");b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+icons[ic]+'</svg>';b.append(l);
+ b.onclick=()=>{document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.id===id));document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));window.scrollTo(0,0)};$("#nav").append(b)});
+</script>
+</body>
+</html>
